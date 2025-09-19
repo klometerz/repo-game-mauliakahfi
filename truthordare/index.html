@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Truth or Dare — Flirty Edition</title>
+  <meta name="description" content="Game Truth or Dare ringan sampai agak nakal (PG-13), cocok buat pasangan."> 
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root{
+      --bg:#0f1020; --card:#15162b; --ink:#f5f7ff; --muted:#9aa0b4; --accent:#ff8fab; --accent2:#b69cff;
+      --ring: 0 0 0 2px rgba(255,143,171,.35), 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px; --radius-sm: 12px;
+    }
+    html,body{height:100%; margin:0; background:radial-gradient(1200px 800px at 10% -20%, #1b1d3a 0%, #0f1020 55%);
+      color:var(--ink); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";}
+    .wrap{max-width:980px;margin:24px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .logo{width:60px;height:60px;border-radius:14px;display:grid;place-items:center;font-weight:800;color:#1b1d3a;
+      background:conic-gradient(from 180deg, #ffd6e6, #d5c8ff, #c8fff1, #ffd6e6);}
+    h1{margin:0;font-size:22px}
+    .sub{color:var(--muted);font-size:14px}
+
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius); padding:16px; box-shadow: var(--ring)}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    select,button,input[type="checkbox"]{accent-color:#ff87b3}
+    select,button{border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+      color:var(--ink); padding:10px 14px; cursor:pointer}
+    button:hover{transform:translateY(-1px)}
+
+    .board{margin-top:16px; display:grid; grid-template-columns: 1.1fr .9fr; gap:16px}
+    @media (max-width: 900px){ .board{grid-template-columns:1fr} }
+
+    .card{min-height:160px; display:flex; align-items:center; justify-content:center; text-align:center;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      border:1px dashed rgba(255,255,255,.16); border-radius:var(--radius); padding:20px; font-size:22px}
+
+    .side{display:grid; gap:12px}
+    .chip{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.06);border-radius:999px;padding:6px 10px;border:1px solid rgba(255,255,255,.12)}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05)}
+
+    .list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px; max-height:320px; overflow:auto}
+    .item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;font-size:14px}
+
+    .footer{margin-top:18px; color:var(--muted); font-size:13px}
+
+    .tabbar{display:flex;gap:8px}
+    .tab{flex:1;text-align:center;border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);cursor:pointer;font-weight:600}
+    .tab[aria-selected="true"]{background:linear-gradient(90deg, rgba(255,143,171,.25), rgba(182,156,255,.25)); border-color:rgba(255,143,171,.45)}
+
+    .safe{display:flex;gap:8px;align-items:center}
+    .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.15)}
+
+    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#11172b;color:#fff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);display:none}
+
+    /* PRINT */
+    @media print{
+      .no-print{display:none}
+      body{background:white;color:black}
+      .wrap{max-width:100%;margin:0;padding:0}
+      .print-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10mm;padding:12mm}
+      .p-card{height:95mm;border:1px solid #ddd;border-radius:6mm;padding:10mm;page-break-inside:avoid}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">TD</div>
+      <div>
+        <h1>Truth or Dare — Flirty Edition</h1>
+        <div class="sub">Fun, consent-first, dari yang manis sampai agak nakal (PG‑13). Cocok buat pasangan. 💖</div>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="controls row no-print">
+        <div class="tabbar" role="tablist" aria-label="Mode">
+          <button class="tab" role="tab" id="tab-truth" aria-selected="true">Truth</button>
+          <button class="tab" role="tab" id="tab-dare" aria-selected="false">Dare</button>
+          <button class="tab" role="tab" id="tab-mix" aria-selected="false">Mix</button>
+        </div>
+        <label class="pill">Spice:
+          <select id="spice">
+            <option value="sweet">Sweet 🍬 (ringan)</option>
+            <option value="spicy">Spicy 🌶 (flirty)</option>
+            <option value="saucy">Saucy 🔥 (PG‑13)</option>
+            <option value="all" selected>Semua</option>
+          </select>
+        </label>
+        <label class="pill safe"><input type="checkbox" id="sfw" checked> Safe & respectful</label>
+        <button id="btnDraw">Ambil Kartu</button>
+        <button id="btnNext">Next</button>
+        <button id="btnAdd" title="Tambah pertanyaan/tantangan custom">+ Custom</button>
+        <button id="btnShow">Lihat Semua</button>
+        <button id="btnPrint">Print</button>
+        <button id="btnCopy">Copy</button>
+      </div>
+
+      <div class="board">
+        <div id="card" class="card">Klik <b>Ambil Kartu</b> untuk mulai 🎴</div>
+        <aside class="side">
+          <div class="chip"><span class="badge">Consent</span> Stop jika salah satu bilang <b>RED</b>. Istirahat jika <b>YELLOW</b>.</div>
+          <div class="chip"><span class="badge">Aturan</span> Boleh skip 1 kartu per ronde tanpa hukuman.</div>
+          <div class="chip"><span class="badge">Tip</span> Pasang timer 30–60 detik biar deg‑degan.</div>
+          <div class="list" id="recent"></div>
+        </aside>
+      </div>
+
+      <div class="footer">Semua konten dijaga pada level romantis/flirty yang santun (tanpa konten eksplisit). Kamu bisa tambah/menghapus item sesuai kenyamanan.</div>
+    </div>
+  </div>
+
+  <!-- PRINT AREA -->
+  <div id="printZone" style="display:none">
+    <div class="print-grid" id="printGrid"></div>
+  </div>
+
+  <div class="toast" id="toast">Tersalin ke clipboard ✔</div>
+
+<script>
+  // ======================
+  // DATA (PG-13, non-eksplisit)
+  // ======================
+  const TRUTH = {
+    sweet: [
+      "Momen paling bikin kamu merasa dicintai olehku kapan?",
+      "Bagian kepribadianku yang diam-diam kamu kagumi?",
+      "Hal kecil apa yang langsung bikin kamu kangen aku?",
+      "Apa love language yang paling ngena dari aku?",
+      "Kapan terakhir kali kamu tersipu karena aku?",
+    ],
+    spicy: [
+      "Hal flirty favorit yang aku lakukan ke kamu?",
+      "Kapan pertama kali kamu kepikiran aku dengan cara yang... berbeda? 😉",
+      "Apa outfitku yang bikin kamu kelepek‑kelepek?",
+      "Share fantasi kencan malam yang classy tapi bikin deg‑degan.",
+      "Sinyal kecil apa dari aku yang paling bikin kamu gemes?",
+    ],
+    saucy: [
+      "Apa batas nyaman kamu untuk topik nakal? Sebut red line dan green light‑mu.",
+      "Hal paling nakal tapi masih elegan yang pengin kamu coba berdua?",
+      "Kalau rating ‘nakal’ 1–10, malam idealmu ada di angka berapa dan kenapa?",
+      "Cerita momen ketika kamu paling merasa ‘chemistry’-nya meledak dengan aku.",
+      "Apa bentuk godaan halus yang paling efektif menurutmu?",
+    ]
+  };
+
+  const DARE = {
+    sweet: [
+      "Kirim voice note 10 detik bilang tiga hal yang kamu syukuri tentang aku.",
+      "Tulis catatan manis untuk aku, bacakan sekarang.",
+      "Peluk selama 20 detik tanpa bicara.",
+      "Tatap mataku selama 15 detik, lalu sebutkan satu hal yang kamu lihat.",
+      "Pilih lagu kita dan ajak slow sway 30 detik.",
+    ],
+    spicy: [
+      "Bisikkan rahasia manis di telingaku (maks. 10 kata).",
+      "Foto selfie berdua sekarang dengan pose paling gemes.",
+      "Kasih pujian flirty yang belum pernah kamu ucapkan.",
+      "Pilih ‘kode godaan’ satu gerakan kecil yang akan kita pakai ke depannya.",
+      "Buat janji kencan mendadak akhir pekan ini (tempat & jam).",
+    ],
+    saucy: [
+      "Describe (tanpa vulgar) satu fantasi kencan elegan 30 detik.",
+      "Bisikkan ‘pickup line’ paling nakal yang masih sopan.",
+      "Pilih satu tantangan romantis untuk nanti malam (tetap PG‑13).",
+      "Tulis 3 kalimat godaan halus yang mau kamu kirim ke aku nanti.",
+      "Main ‘roleplay’ 30 detik: kamu sebagai barista, aku pelanggan favorit.",
+    ]
+  };
+
+  // Storage for custom items
+  const CUSTOM = JSON.parse(localStorage.getItem('tod_custom')||'{"truth":[],"dare":[]}');
+
+  // ======================
+  // STATE & HELPERS
+  // ======================
+  let mode = 'truth'; // truth | dare | mix
+  let spice = 'all';  // sweet | spicy | saucy | all
+  let history = [];
+
+  const bySpice = (obj) => {
+    if(spice==='all') return [...obj.sweet, ...obj.spicy, ...obj.saucy];
+    return obj[spice]||[];
+  };
+
+  const poolTruth = () => [...bySpice(TRUTH), ...(CUSTOM.truth||[])];
+  const poolDare  = () => [...bySpice(DARE),  ...(CUSTOM.dare||[])];
+
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function draw(){
+    let text = '';
+    let label = '';
+    if(mode==='truth') { text = pick(poolTruth()); label='Truth'; }
+    else if(mode==='dare'){ text = pick(poolDare()); label='Dare'; }
+    else {
+      const coin = Math.random()<.5; 
+      if(coin){ text = pick(poolTruth()); label='Truth'; } else { text = pick(poolDare()); label='Dare'; }
+    }
+    if(!text) text = 'Belum ada item untuk kombinasi ini.';
+    showCard(text, label);
+  }
+
+  function showCard(text, label){
+    const card = document.getElementById('card');
+    card.innerHTML = `<div>
+      <div style="display:inline-flex;gap:8px;align-items:center;margin-bottom:10px">
+        <span class="badge" style="background:linear-gradient(90deg, rgba(255,143,171,.25), rgba(182,156,255,.25)); border-color:rgba(255,143,171,.45)">${label}</span>
+        <span class="badge">${spice.toUpperCase()}</span>
+      </div>
+      <div style="font-size:22px;line-height:1.35">${escapeHTML(text)}</div>
+    </div>`;
+    addRecent(text, label);
+  }
+
+  function addRecent(text,label){
+    history.push({text,label,ts:Date.now()});
+    history = history.slice(-8);
+    const box = document.getElementById('recent');
+    box.innerHTML = history.map(h=>`<div class="item"><b>${h.label}</b> — ${escapeHTML(h.text)}</div>`).join('');
+  }
+
+  function escapeHTML(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+  // ======================
+  // UI Wiring
+  // ======================
+  const tabTruth = document.getElementById('tab-truth');
+  const tabDare  = document.getElementById('tab-dare');
+  const tabMix   = document.getElementById('tab-mix');
+  const tabs = [tabTruth, tabDare, tabMix];
+
+  function selectTab(t){
+    mode = t; 
+    tabs.forEach(btn=>btn.setAttribute('aria-selected','false'));
+    (t==='truth'?tabTruth:t==='dare'?tabDare:tabMix).setAttribute('aria-selected','true');
+  }
+  tabTruth.addEventListener('click', ()=>selectTab('truth'));
+  tabDare .addEventListener('click', ()=>selectTab('dare'));
+  tabMix  .addEventListener('click', ()=>selectTab('mix'));
+
+  document.getElementById('spice').addEventListener('change', e=>{spice=e.target.value});
+  document.getElementById('btnDraw').addEventListener('click', draw);
+  document.getElementById('btnNext').addEventListener('click', draw);
+
+  document.getElementById('btnCopy').addEventListener('click', async ()=>{
+    const txt = document.getElementById('card').innerText.trim();
+    try{ await navigator.clipboard.writeText(txt); toast('Tersalin ke clipboard ✔'); }catch(e){ toast('Gagal menyalin'); }
+  });
+
+  document.getElementById('btnAdd').addEventListener('click', ()=>{
+    const type = prompt('Jenis? ketik truth / dare','truth');
+    if(!type || !['truth','dare'].includes(type.toLowerCase())) return;
+    const text = prompt('Tulis isi kartu (PG-13, sopan):','');
+    if(!text) return;
+    CUSTOM[type].push(text);
+    localStorage.setItem('tod_custom', JSON.stringify(CUSTOM));
+    toast('Ditambahkan ✔');
+  });
+
+  document.getElementById('btnShow').addEventListener('click', ()=>{
+    const allTruth = poolTruth();
+    const allDare  = poolDare();
+    const text = [
+      `Truth (${allTruth.length})`,
+      ...allTruth.map(x=>`• ${x}`),
+      '',
+      `Dare (${allDare.length})`,
+      ...allDare.map(x=>`• ${x}`)
+    ].join('\n');
+    const w = window.open('', '_blank');
+    w.document.write('<pre style="white-space:pre-wrap;font-family:Inter,system-ui;padding:16px">'+escapeHTML(text)+'</pre>');
+    w.document.close();
+  });
+
+  document.getElementById('btnPrint').addEventListener('click', ()=>{
+    const grid = document.getElementById('printGrid');
+    grid.innerHTML='';
+    const items = [...poolTruth().slice(0,10).map(x=>({t:'Truth',x})), ...poolDare().slice(0,10).map(x=>({t:'Dare',x}))];
+    items.forEach(it=>{
+      const div = document.createElement('div');
+      div.className='p-card';
+      div.innerHTML = `<div style="font-weight:700;margin-bottom:6px">${it.t}</div><div style="font-size:18px">${escapeHTML(it.x)}</div>`;
+      grid.appendChild(div);
+    });
+    document.getElementById('printZone').style.display='block';
+    window.print();
+    document.getElementById('printZone').style.display='none';
+  });
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display='block';
+    setTimeout(()=>{t.style.display='none'}, 1400);
+  }
+
+  // initial
+  selectTab('truth');
+</script>
+</body>
+</html>
