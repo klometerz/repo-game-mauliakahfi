@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connect Four — LDR Mode</title>
+  <meta name="description" content="Connect Four (4-in-a-row) untuk LDR: room online via Firebase atau main lokal di satu device.">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root{ --bg:#0e0f1b; --panel:#141a32; --ink:#f6f7ff; --muted:#9aa0b4; --accent:#86e1ff; --accent2:#ffb3c1; --win:#34d399; --warn:#fbbf24; --radius:16px; --ring:0 0 0 2px rgba(134,225,255,.35), 0 18px 60px rgba(0,0,0,.35) }
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 800px at 10% -20%,#202654 0%,#0e0f1b 55%);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:980px;margin:24px auto;padding:20px}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:60px;height:60px;border-radius:14px;background:conic-gradient(from 90deg,#c3f0ff,#ffe2e7,#c3f0ff);display:grid;place-items:center;color:#1b1d3a;font-weight:800}
+    h1{margin:0;font-size:22px}
+    .sub{color:var(--muted);font-size:14px}
+
+    .panel{margin-top:16px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;box-shadow:var(--ring)}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05)}
+    select,button,input{accent-color:#86e1ff}
+    select,button,input[type="text"]{color:var(--ink);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px}
+    button{cursor:pointer}
+    button:hover{transform:translateY(-1px)}
+
+    .board{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;max-width:720px;margin:16px auto}
+    .col{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:8px;display:grid;grid-template-rows:repeat(6,1fr);gap:8px;cursor:pointer}
+    .cell{background:#0c1228;border:1px solid rgba(255,255,255,.1);border-radius:999px;display:grid;place-items:center;aspect-ratio:1/1}
+    .disc{width:80%;height:80%;border-radius:999px;box-shadow:inset 0 6px 12px rgba(0,0,0,.3)}
+    .p1{background:radial-gradient(circle at 30% 30%,#ff7b7b,#d63939)}
+    .p2{background:radial-gradient(circle at 30% 30%,#ffd166,#e99d00)}
+    .hint{outline:2px dashed rgba(255,255,255,.25)}
+    .winmark{box-shadow:0 0 0 3px rgba(52,211,153,.9), 0 0 18px rgba(52,211,153,.6)}
+
+    .side{display:grid;gap:12px;max-width:720px;margin:0 auto}
+    .chip{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.06);border-radius:999px;padding:6px 10px;border:1px solid rgba(255,255,255,.12)}
+    .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.15)}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+    .footer{margin-top:10px;color:var(--muted);font-size:13px}
+    .note{color:#9fe0ff}
+
+    @media (max-width: 640px){ .board{gap:8px} .col{gap:6px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">C4</div>
+      <div>
+        <h1>Connect Four — LDR Mode</h1>
+        <div class="sub">Main berdua dari jarak jauh (room online) atau lokal 1 device. Giliran bergantian, 4 sejajar menang. 💙</div>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="controls">
+        <label class="pill">Mode:
+          <select id="mode">
+            <option value="local">Lokal (1 device)</option>
+            <option value="remote">Remote (LDR via Room)</option>
+          </select>
+        </label>
+        <span class="pill" id="youAre" title="Identitas pemain"></span>
+        <button id="btnNew">Game Baru</button>
+        <button id="btnReset">Reset Papan</button>
+        <span class="pill">Ukuran: <select id="size"><option value="6x7">6×7 (klasik)</option><option value="5x6">5×6 (cepat)</option><option value="7x8">7×8 (panjang)</option></select></span>
+      </div>
+
+      <div class="controls" id="remoteCtl" style="display:none">
+        <span class="pill">Room ID: <input id="roomId" type="text" placeholder="contoh: KM123" style="width:120px"> <button id="btnCreate">Create</button> <button id="btnJoin">Join</button></span>
+        <button id="btnCopyLink">Copy Link</button>
+        <span class="pill">Status: <span id="status">offline</span></span>
+      </div>
+
+      <div class="row" style="justify-content:center;margin-top:8px">
+        <span class="chip"><span class="badge">Giliran</span> <span id="turn">-</span></span>
+        <span class="chip"><span class="badge">Skor</span> P1:<b id="s1">0</b> · P2:<b id="s2">0</b></span>
+        <span class="chip"><span class="badge">Pemain</span> <span id="pnames">-</span></span>
+      </div>
+
+      <div id="board" class="board"></div>
+
+      <div class="side">
+        <div class="chip"><span class="badge">Tips</span> Hover kolom untuk lihat posisi jatuh. Klik untuk jatuhkan bidak.</div>
+        <div class="chip"><span class="badge">Catatan</span> Di mode Remote, hanya pemain yang gilirannya berjalan yang bisa klik.</div>
+      </div>
+
+      <div class="footer">Mode Remote menggunakan <span class="note">Firebase Realtime Database</span> dari browser (gratis tier cukup). Masukkan config project-mu di bagian <code>FIREBASE_CONFIG</code> pada file ini. Jika tidak diisi, fitur room otomatis nonaktif (tetap bisa main lokal).</div>
+    </div>
+  </div>
+
+  <!-- Firebase (Compat SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+  // ======= FIREBASE CONFIG (ISI DENGAN PUNYAMU) =======
+  const FIREBASE_CONFIG = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "YOUR_PROJECT",
+    appId: "YOUR_APP_ID"
+  };
+  // ================================================
+
+  let fb = { app:null, db:null, uid:null, ready:false };
+  function initFirebase(){
+    try{
+      if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith('YOUR_')) return; // skip if not configured
+      fb.app = firebase.initializeApp(FIREBASE_CONFIG);
+      fb.db = firebase.database();
+      firebase.auth().signInAnonymously().then(cred=>{ fb.uid = cred.user.uid; fb.ready=true; setStatus('online'); }).catch(()=>{ setStatus('auth-failed'); });
+    }catch(e){ console.warn('Firebase init failed', e); }
+  }
+
+  // ======= GAME LOGIC =======
+  const el = id=>document.getElementById(id);
+  const boardEl = el('board');
+  let ROWS=6, COLS=7;
+  let board=[], turn=1, winner=0, lock=false; // 0 empty, 1 P1, 2 P2
+  let score={1:0,2:0};
+  let mode='local';
+  let myRole=null; // 'p1' or 'p2' in remote
+  let room=null; // room id
+  let roomRef=null; // firebase ref
+  let unsub=null; // listener
+
+  function newBoard(){ board = Array.from({length:ROWS}, ()=> Array(COLS).fill(0)); winner=0; lock=false; render(); }
+
+  function setSize(str){ const [r,c]=str.split('x').map(x=>+x); ROWS=r; COLS=c; newBoard(); buildUI(); }
+
+  function buildUI(){
+    boardEl.innerHTML='';
+    boardEl.style.gridTemplateColumns = `repeat(${COLS},1fr)`;
+    for(let c=0;c<COLS;c++){
+      const col = document.createElement('div'); col.className='col'; col.dataset.col=c;
+      col.addEventListener('mouseenter',()=> hint(c,true));
+      col.addEventListener('mouseleave',()=> hint(c,false));
+      col.addEventListener('click',()=> handleMove(c));
+      for(let r=0;r<ROWS;r++){
+        const cell = document.createElement('div'); cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c; col.appendChild(cell);
+      }
+      boardEl.appendChild(col);
+    }
+    render();
+  }
+
+  function hint(c,on){ if(winner) return; const r = dropRow(c); if(r<0) return; const cell = qCell(r,c); cell.classList.toggle('hint', on); }
+  function qCell(r,c){ return boardEl.children[c].children[r]; }
+
+  function dropRow(c){ for(let r=ROWS-1;r>=0;r--) if(board[r][c]===0) return r; return -1; }
+
+  function handleMove(c){
+    if(lock||winner) return;
+    if(mode==='remote' && !canIMove()) return;
+    const r = dropRow(c); if(r<0) return; // full
+    board[r][c]=turn; const winLine = checkWin(r,c,turn);
+    turn = (turn===1?2:1);
+    render(winLine);
+    if(mode==='remote' && roomRef) saveState();
+  }
+
+  function render(winLine){
+    for(let c=0;c<COLS;c++) for(let r=0;r<ROWS;r++){
+      const cell = qCell(r,c); cell.classList.remove('hint');
+      cell.innerHTML=''; const v = board[r][c]; if(v){ const d=document.createElement('div'); d.className='disc '+(v===1?'p1':'p2'); cell.appendChild(d); }
+      cell.classList.remove('winmark');
+    }
+    if(winLine){ winLine.forEach(([rr,cc])=> qCell(rr,cc).classList.add('winmark')); }
+    const tname = (turn===1?'P1 (Merah)':'P2 (Kuning)'); el('turn').textContent = winner? (winner===-1?'Seri':'MENANG: '+(winner===1?'P1':'P2')) : tname;
+    el('s1').textContent = score[1]; el('s2').textContent = score[2];
+    const my = myRole? (myRole==='p1'?'P1':'P2') : '-';
+    el('youAre').textContent = mode==='remote'? `Kamu: ${my}` : 'Lokal (P1 vs P2)';
+  }
+
+  function checkWin(r,c,p){
+    function line(dr,dc){ let arr=[[r,c]]; let rr=r+dr, cc=c+dc; while(inb(rr,cc)&&board[rr][cc]===p){arr.push([rr,cc]); rr+=dr; cc+=dc;} rr=r-dr; cc=c-dc; while(inb(rr,cc)&&board[rr][cc]===p){arr.unshift([rr,cc]); rr-=dr; cc-=dc;} return arr; }
+    function inb(rr,cc){ return rr>=0&&rr<ROWS&&cc>=0&&cc<COLS; }
+    const dirs=[[1,0],[0,1],[1,1],[1,-1]]; for(const [dr,dc] of dirs){ const arr=line(dr,dc); if(arr.length>=4){ winner=p; score[p]++; lock=true; return arr.slice(0,4); } }
+    // draw?
+    if(board.every(row=> row.every(v=>v!==0))){ winner=-1; lock=true; }
+    return null;
+  }
+
+  function resetBoard(){ newBoard(); }
+  function newGame(){ score={1:0,2:0}; turn=1; newBoard(); if(mode==='remote'&&roomRef) saveState(true); }
+
+  // ======= REMOTE (Firebase) =======
+  function canIMove(){ if(!myRole) return false; return (turn===1 && myRole==='p1') || (turn===2 && myRole==='p2'); }
+  function setStatus(s){ el('status').textContent = s; }
+
+  function roomPath(id){ return `rooms/${id}`; }
+
+  async function createRoom(){ if(!fb.ready){ alert('Firebase belum siap/konfigurasi kosong.'); return; }
+    const id = (el('roomId').value || genId()); el('roomId').value=id; room=id; myRole='p1'; turn=1; newBoard();
+    roomRef = fb.db.ref(roomPath(id));
+    await roomRef.set({ board, turn, score, players:{ p1: fb.uid || 'p1', p2: '' }, ts: Date.now() });
+    attachListener(); setStatus('room-created'); updateNames();
+  }
+
+  async function joinRoom(){ if(!fb.ready){ alert('Firebase belum siap/konfigurasi kosong.'); return; }
+    const id = el('roomId').value.trim(); if(!id){ alert('Masukkan Room ID.'); return; }
+    room=id; roomRef = fb.db.ref(roomPath(id));
+    const snap = await roomRef.get(); if(!snap.exists()){ alert('Room tidak ditemukan.'); return; }
+    const data = snap.val();
+    if(!data.players.p1){ myRole='p1'; await roomRef.child('players/p1').set(fb.uid||'p1'); }
+    else if(!data.players.p2){ myRole='p2'; await roomRef.child('players/p2').set(fb.uid||'p2'); }
+    else { myRole=null; alert('Room penuh. Kamu akan jadi penonton.'); }
+    attachListener(); setStatus('joined'); updateNames();
+  }
+
+  function attachListener(){ if(unsub) roomRef.off('value', unsub); unsub = roomRef.on('value', (snap)=>{
+      const v = snap.val(); if(!v) return;
+      board = v.board; turn = v.turn; score = v.score||score; render(); updateNames(v.players);
+    });
+  }
+
+  function saveState(reset=false){ if(!roomRef) return; roomRef.update({ board, turn, score, ts: Date.now(), reset: !!reset }); }
+
+  function updateNames(players){ const p = players || {}; const p1=(p.p1? short(p.p1):'-'); const p2=(p.p2? short(p.p2):'-'); el('pnames').textContent = `P1:${p1} · P2:${p2}`; }
+  const short = (s)=> (s||'').toString().slice(0,6);
+
+  function genId(){ const a='KMA1234567890'; let r=''; for(let i=0;i<6;i++) r+=a[Math.floor(Math.random()*a.length)]; return r; }
+
+  function copyLink(){ if(!room){ alert('Belum ada Room. Create dulu.'); return; } const url = location.origin+location.pathname+`#room=${room}`; navigator.clipboard.writeText(url).then(()=> alert('Link disalin. Kirim ke pasangan.')); }
+
+  // ======= INIT & EVENTS =======
+  function applyMode(){ mode = el('mode').value; el('remoteCtl').style.display = (mode==='remote')? 'flex':'none'; myRole = null; room=null; setStatus( mode==='remote' ? (fb.ready?'online':'offline') : 'local' ); newGame(); }
+
+  el('mode').addEventListener('change', applyMode);
+  el('btnNew').addEventListener('click', newGame);
+  el('btnReset').addEventListener('click', resetBoard);
+  el('size').addEventListener('change', e=> setSize(e.target.value));
+  el('btnCreate').addEventListener('click', createRoom);
+  el('btnJoin').addEventListener('click', joinRoom);
+  el('btnCopyLink').addEventListener('click', copyLink);
+
+  // Allow hash-join like #room=KM123
+  window.addEventListener('load', ()=>{
+    initFirebase();
+    buildUI();
+    setSize('6x7');
+    applyMode();
+    const m = new URLSearchParams(location.hash.replace('#','')); const r = m.get('room'); if(r){ el('mode').value='remote'; applyMode(); el('roomId').value=r; }
+  });
+</script>
+</body>
+</html>
