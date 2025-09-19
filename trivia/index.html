@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trivia Quiz Islami — Fiqih Pernikahan</title>
-  <meta name="description" content="Quiz edukatif fiqih pernikahan: hak & kewajiban suami-istri, adab nikah, mahar, wali, dsb.">
+  <title>Trivia Quiz Islami — Fiqih Pernikahan — Kahfi ♥ Maulia</title>
+  <meta name="description" content="$1 — Dibuat khusus untuk Kahfi & Maulia">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <style>
     :root{ --bg:#0e0f1b; --panel:#141a32; --ink:#f6f7ff; --muted:#9aa0b4; --accent:#8bd3dd; --accent2:#ffb3c1; --ok:#34d399; --bad:#f87171; --ring:0 0 0 2px rgba(255,179,193,.35), 0 18px 60px rgba(0,0,0,.35); --radius:16px }
@@ -60,10 +60,11 @@
 <body>
   <div class="wrap">
     <header>
-      <div class="logo">FQ</div>
+      <div class="logo">K♥M</div>
       <div>
-        <h1>Trivia Quiz Islami — Fiqih Pernikahan</h1>
+        <h1>Trivia Quiz Islami — Fiqih Pernikahan <span style="font-weight:500;opacity:.85">| Kahfi ♥ Maulia Edition</span></h1>
         <div class="sub">Edukasi ringan seputar fiqih nikah: hak & kewajiban, adab, mahar, wali, dan lainnya. 
+          <span style="display:block;color:#ffd3e1">Untuk: Kahfi & Maulia</span>
           <span style="display:block;color:#9fe0ff">Disclaimer: Ringkasan edukatif. Untuk kasus khusus, rujuk ustadz/ustadzah atau kitab fiqih terpercaya.</span>
         </div>
       </div>
@@ -109,8 +110,7 @@
         </aside>
       </div>
 
-      <div class="footer">Sumber umum: ringkasan dari kitab-kitab fiqih muamalah & munakahat serta hadits sahih (mis. HR. Bukhari & Muslim) — ditulis singkat untuk kebutuhan quiz.
-      </div>
+      <div class="footer">$1<br><span style="opacity:.8">Dibuat khusus untuk Kahfi & Maulia</span></div>
     </div>
   </div>
 
@@ -240,7 +240,7 @@
   function finish(){
     const n = order.length; const pct = Math.round((score/n)*100);
     const msg = pct>=90? 'MasyaAllah! Mantap ilmunya 🤍' : pct>=70? 'Alhamdulillah, bagus! Terus belajar ya.' : pct>=50? 'Lumayan, tinggal diasah lagi~' : 'Semangat! InsyaAllah makin paham.';
-    el('qtext').innerHTML = `Selesai! Skor kamu <b>${score}/${n}</b> (${pct}%).<br>${msg}`;
+    el('qtext').innerHTML = `Selesai, Kahfi ♥ Maulia! Skor sesi ini <b>${score}/${n}</b> (${pct}%).<br>${msg}`;
     el('opts').innerHTML=''; el('explain').style.display='none'; el('btnNext').disabled=true; el('btnSubmit').disabled=true; el('btnReview').disabled = wrongList.length===0;
   }
 
