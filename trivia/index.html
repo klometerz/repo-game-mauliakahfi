@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trivia Quiz Islami — Fiqih Pernikahan</title>
+  <meta name="description" content="Quiz edukatif fiqih pernikahan: hak & kewajiban suami-istri, adab nikah, mahar, wali, dsb.">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root{ --bg:#0e0f1b; --panel:#141a32; --ink:#f6f7ff; --muted:#9aa0b4; --accent:#8bd3dd; --accent2:#ffb3c1; --ok:#34d399; --bad:#f87171; --ring:0 0 0 2px rgba(255,179,193,.35), 0 18px 60px rgba(0,0,0,.35); --radius:16px }
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 800px at 10% -20%,#202654 0%,#0e0f1b 55%);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:980px;margin:24px auto;padding:20px}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:60px;height:60px;border-radius:14px;background:conic-gradient(from 90deg,#c3f0ff,#ffe2e7,#c3f0ff);display:grid;place-items:center;color:#1b1d3a;font-weight:800}
+    h1{margin:0;font-size:22px}
+    .sub{color:var(--muted);font-size:14px}
+
+    .panel{margin-top:16px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:16px;box-shadow:var(--ring)}
+
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05)}
+    select,button,input[type="checkbox"]{accent-color:#7dd3fc}
+    select,button{color:var(--ink);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;cursor:pointer}
+    button:hover{transform:translateY(-1px)}
+
+    .board{margin-top:16px;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+    @media (max-width: 900px){ .board{grid-template-columns:1fr} }
+
+    .qwrap{display:grid;gap:12px}
+    .qcard{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px dashed rgba(255,255,255,.16);border-radius:var(--radius);padding:18px}
+    .q{font-size:20px;line-height:1.4}
+    .opts{display:grid;gap:8px;margin-top:8px}
+    .opt{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .opt:hover{background:rgba(255,255,255,.07)}
+    .opt[aria-checked="true"]{outline:2px solid var(--accent);background:rgba(139,211,221,.12)}
+    .opt.correct{border-color:rgba(52,211,153,.6);outline:2px solid rgba(52,211,153,.5);background:rgba(52,211,153,.12)}
+    .opt.wrong{border-color:rgba(248,113,113,.6);outline:2px solid rgba(248,113,113,.5);background:rgba(248,113,113,.12)}
+
+    .meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+    .explain{margin-top:10px;font-size:14px;color:#dbeafe}
+
+    .side{display:grid;gap:12px}
+    .chip{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.06);border-radius:999px;padding:6px 10px;border:1px solid rgba(255,255,255,.12)}
+    .badge{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.15)}
+    .list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;max-height:340px;overflow:auto}
+    .item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;font-size:14px}
+
+    .progress{height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+    .footer{margin-top:10px;color:var(--muted);font-size:13px}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+
+    .score{font-weight:700}
+
+    /* PRINT CERT */
+    @media print{ .no-print{display:none} body{background:white;color:black} .wrap{max-width:100%;margin:0;padding:0} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">FQ</div>
+      <div>
+        <h1>Trivia Quiz Islami — Fiqih Pernikahan</h1>
+        <div class="sub">Edukasi ringan seputar fiqih nikah: hak & kewajiban, adab, mahar, wali, dan lainnya. 
+          <span style="display:block;color:#9fe0ff">Disclaimer: Ringkasan edukatif. Untuk kasus khusus, rujuk ustadz/ustadzah atau kitab fiqih terpercaya.</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="controls no-print">
+        <label class="pill">Jumlah Soal:
+          <select id="count">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </label>
+        <label class="pill"><input type="checkbox" id="timerToggle"> Timer 20 detik/soal</label>
+        <button id="btnStart">Mulai Quiz</button>
+        <button id="btnReview" disabled>Review Salah</button>
+        <button id="btnReset">Reset</button>
+      </div>
+
+      <div class="progress no-print"><div class="bar" id="bar"></div></div>
+
+      <div class="board">
+        <section class="qwrap">
+          <div class="qcard">
+            <div id="qtext" class="q">Klik <b>Mulai Quiz</b> untuk memulai. Semoga berkah! 🤲</div>
+            <div id="opts" class="opts"></div>
+            <div id="explain" class="explain" style="display:none"></div>
+            <div class="btnrow no-print">
+              <button id="btnSubmit" disabled>Jawab</button>
+              <button id="btnNext" disabled>Berikutnya ▶</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="chip"><span class="badge">Niat</span> Belajar bersama untuk saling memahami & mengamalkan adab pernikahan.</div>
+          <div class="chip"><span class="badge">Skor</span> Benar: <span class="score" id="score">0</span> / <span id="total">0</span></div>
+          <div class="chip"><span class="badge">Streak</span> <span id="streak">0</span> 🔥</div>
+          <div class="chip"><span class="badge">Progres</span> Soal ke-<span id="idx">0</span> dari <span id="cnt">0</span></div>
+          <div class="list" id="recent"></div>
+        </aside>
+      </div>
+
+      <div class="footer">Sumber umum: ringkasan dari kitab-kitab fiqih muamalah & munakahat serta hadits sahih (mis. HR. Bukhari & Muslim) — ditulis singkat untuk kebutuhan quiz.
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ======================
+  // BANK SOAL (ringkasan edukatif, non-mazhab-spesifik; beberapa hal bersifat ijma', sebagian berbeda mazhab → gunakan sebagai pemantik belajar)
+  // ======================
+  const QUESTIONS = [
+    { q: "Apa hukum menikah dalam Islam?", a: ["Selalu wajib","Selalu sunnah","Bisa wajib, sunnah, mubah, makruh, haram tergantung kondisi","Selalu makruh"], i: 2, e: "Para ulama menjelaskan hukum menikah bersifat kondisional tergantung kemampuan & kebutuhan.", s: "Fiqih Munakahat; hukum taklifi" },
+    { q: "Siapa wali yang paling utama dalam akad nikah seorang perempuan?", a: ["Paman","Ayah kandung","Kakak laki-laki","Hakim"], i: 1, e: "Urutan wali nasab dimulai dari ayah. Jika tidak ada/enggan tanpa alasan syar'i → wali hakim.", s: "HR. Abu Dawud; fiqih munakahat" },
+    { q: "Apa mahar yang paling baik menurut Rasulullah ﷺ?", a: ["Yang paling mahal","Yang paling ringan/mudah","Yang berupa emas saja","Yang berupa uang banyak"], i: 1, e: "Sebaik-baik mahar adalah yang mudah/tidak memberatkan.", s: "HR. Abu Dawud, Ibnu Majah" },
+    { q: "Apa kewajiban utama seorang suami kepada istrinya?", a: ["Memberi nafkah lahir & batin","Membelikan perhiasan","Memberikan pekerjaan","Menuruti semua keinginan istri"], i: 0, e: "Suami wajib memberi nafkah ma'ruf (sandang, pangan, papan) & hubungan suami-istri dengan adab.", s: "QS. At‑Thalaq:7; HR. Muslim" },
+    { q: "Doa adab berhubungan suami istri adalah…", a: ["Membaca Al‑Fatihah","Doa agar dijauhkan dari setan & terjaga keturunan","Membaca ayat kursi","Membaca shalawat 100x"], i: 1, e: "Doa: Bismillah, Allahumma jannibna asy-syaithana...", s: "HR. Bukhari, Muslim" },
+    { q: "Apakah akad nikah sah tanpa mahar ditentukan saat akad?", a: ["Tidak sah","Sah, mahar bisa ditentukan/diundurkan kemudian","Sah, tapi berdosa","Tidak sah kecuali ada saksi khusus"], i: 1, e: "Nikah sah walau mahar belum disebut (mahar misil/ditetapkan belakangan).", s: "Fiqih munakahat" },
+    { q: "Minimal rukun nikah mencakup…", a: ["Wali, dua saksi, mahar, khutbah","Ijab‑qabul, wali, dua saksi, mempelai","Akad tertulis, mahar, dan wali","Restu keluarga besar"], i: 1, e: "Rukun: mempelai, wali (bagi perempuan), ijab‑qabul, dua saksi adil.", s: "HR. Tirmidzi; fiqih munakahat" },
+    { q: "Hak dasar istri dari suami adalah…", a: ["Nafkah ma'ruf & perlakuan baik","Diizinkan belanja bebas","Kendaraan pribadi","Perhiasan tiap bulan"], i: 0, e: "Hak istri: nafkah ma'ruf, tempat tinggal, mu'asyarah bil ma'ruf.", s: "QS. An‑Nisa:19; At‑Thalaq:6‑7" },
+    { q: "Apakah istri wajib taat pada suami dalam maksiat?", a: ["Ya, karena suami pemimpin","Tidak, tidak ada ketaatan dalam maksiat","Tergantung adat","Hanya jika darurat"], i: 1, e: "Ketaatan hanya dalam ma'ruf; tidak ada ketaatan dalam maksiat.", s: "HR. Bukhari, Muslim" },
+    { q: "Siapa yang menanggung nafkah rumah tangga?", a: ["Suami","Istri","Keduanya wajib sama","Orang tua"], i: 0, e: "Asal hukum: suami menanggung nafkah; istri boleh membantu secara ihsan/kesepakatan.", s: "QS. Al‑Baqarah:233; At‑Thalaq:7" },
+    { q: "Kapan mahar menjadi milik istri sepenuhnya?", a: ["Setelah walimah","Sejak akad nikah sah","Setelah pindah rumah","Setelah hamil"], i: 1, e: "Mahar adalah hak istri sejak akad sah; pembayaran bisa tunai/tempo.", s: "QS. An‑Nisa:4" },
+    { q: "Adab walimah yang dianjurkan…", a: ["Mewah dan wajib besar","Sederhana sesuai kemampuan, undang kerabat & fakir miskin","Hanya keluarga inti","Wajib di gedung"], i: 1, e: "Walimah dianjurkan sederhana & tidak berlebih-lebihan.", s: "HR. Bukhari" },
+    { q: "Bolehkah menunda keturunan (tanzhim) dengan cara yang dibolehkan?", a: ["Selalu haram","Boleh dengan kesepakatan & tanpa mudarat","Hanya boleh kalau sudah punya 3 anak","Wajib"], i: 1, e: "Sebagian ulama membolehkan tanzhim an‑nasl yang halal & tanpa mudarat.", s: "Fiqih kontemporer" },
+    { q: "Apakah istri berhak tempat tinggal terpisah dari keluarga suami?", a: ["Tidak berhak","Berhak tempat tinggal layak sesuai ma'ruf","Hanya jika istri bekerja","Tergantung wali"], i: 1, e: "Istri berhak maskan yang layak sesuai kemampuan suami.", s: "QS. At‑Thalaq:6" },
+    { q: "Batasan kemesraan suami‑istri di ruang publik…", a: ["Boleh bebas","Tetap menjaga adab & aurat, tidak vulgar","Haram semua","Hanya di rumah"], i: 1, e: "Kemesraan dijaga adab & malu di ruang publik.", s: "Hadis tentang haya' (malu)" },
+    { q: "Syarat saksi akad nikah…", a: ["Dua orang muslim, baligh, adil","Satu orang cukup","Perempuan saja","Anak‑anak"], i: 0, e: "Minimal dua saksi laki‑laki muslim, baligh, adil (detail mazhab bisa beda).", s: "Fiqih munakahat; HR. Tirmidzi" },
+    { q: "Bolehkah memandang calon sebelum khitbah?", a: ["Tidak boleh","Boleh yang lazim tampak untuk pertimbangan","Hanya lewat foto","Hanya setelah akad"], i: 1, e: "Boleh melihat yang lazim tampak (wajah & telapak tangan) untuk pertimbangan nikah.", s: "HR. Abu Dawud, Tirmidzi" },
+    { q: "Jika ayah tidak ada, wali berpindah ke…", a: ["Teman dekat","Hakim (jika tak ada wali nasab yang sah)","Tetangga","Kakak perempuan"], i: 1, e: "Jika wali nasab tak ada/enggan tanpa uzur, maka wali hakim.", s: "HR. Abu Dawud" },
+    { q: "Bagaimana hukum menuntut mahar terlalu tinggi?", a: ["Dianjurkan","Dimakruhkan jika memberatkan","Wajib tinggi","Haram"], i: 1, e: "Meminta mahar tinggi yang memberatkan dimakruhkan.", s: "HR. Abu Dawud, Ibnu Majah" },
+    { q: "Kewajiban istri kepada suami secara umum…", a: ["Bekerja di luar rumah","Taat dalam perkara ma'ruf & menjaga amanah rumah tangga","Memenuhi semua perintah tanpa syarat","Menanggung nafkah"], i: 1, e: "Istri taat dalam ma'ruf & menjaga amanah/kehormatan; tidak ada ketaatan dalam maksiat.", s: "QS. An‑Nisa:34; HR. Bukhari" },
+    { q: "Hukum menyakiti pasangan (verbal/fisik)…", a: ["Boleh jika marah","Haram, bertentangan dengan mu'asyarah bil ma'ruf","Makruh","Mubah"], i: 1, e: "Islam memerintahkan perlakuan baik; kezhaliman dilarang.", s: "QS. An‑Nisa:19" },
+    { q: "Apakah ada anjuran shalat/doa setelah akad?", a: ["Tidak ada","Ada riwayat anjuran shalat & doa (diperselisihkan derajatnya)","Wajib dua rakaat","Hanya di masjid"], i: 1, e: "Ada riwayat shalat/doa syukur; tidak dianggap wajib.", s: "Atsar sahabat; referensi fiqih" },
+    { q: "Apakah khutbah al‑hajah dianjurkan saat akad?", a: ["Tidak boleh","Dianjurkan sebagai pembuka","Wajib","Makruh"], i: 1, e: "Khutbatul‑hajah dianjurkan sebelum akad sebagai pembuka.", s: "HR. Abu Dawud" },
+    { q: "Siapa yang menerima mahar?", a: ["Ayah mempelai","Istri (mempelai perempuan)","Wali hakim","Panitia nikah"], i: 1, e: "Mahar adalah hak istri; bukan milik wali/keluarga.", s: "QS. An‑Nisa:4" },
+    { q: "Apakah mahar boleh berupa manfaat (mengajar Qur'an)?", a: ["Tidak boleh","Boleh, pernah dicontohkan Nabi ﷺ","Hanya boleh uang","Hanya emas"], i: 1, e: "Mahar bisa berupa pengajaran Qur'an sesuai hadits.", s: "HR. Bukhari" },
+    { q: "Hukum khalwat (berduaan tertutup) sebelum nikah…", a: ["Boleh","Tidak boleh, hindari khalwat","Mubah","Tergantung izin wali"], i: 1, e: "Dilarang berkhalwat dengan non‑mahram; gunakan mahram/ruang terbuka.", s: "HR. Bukhari, Muslim" },
+    { q: "Akad nikah butuh bahasa Arab?", a: ["Wajib Arab","Boleh bahasa yang dipahami para pihak & saksi","Harus Latin","Tidak perlu ijab‑qabul"], i: 1, e: "Ijab‑qabul sah dengan lafaz yang dipahami oleh para pihak & saksi.", s: "Kaedah fiqih; 'al‑umuru bi maqashidiha'" },
+    { q: "Apakah boleh meletakkan syarat dalam akad (syuruth)?", a: ["Semua syarat batal","Boleh jika tidak bertentangan dengan syariat","Hanya soal nafkah","Hanya soal tempat tinggal"], i: 1, e: "Syarat yang ma'ruf & tidak haram boleh dicantumkan (mis. melanjutkan studi).", s: "Kaedah 'al‑muslimun 'ala syuruthihim'" },
+    { q: "Lamaran (khitbah) itu…", a: ["Mengikat seperti akad","Bukan akad; boleh batal dengan adab baik","Sama dengan akad","Wajib diumumkan"], i: 1, e: "Khitbah bukan akad; batal tetap jaga adab & tidak menzalimi.", s: "Adab khitbah" },
+    { q: "Poligini dalam Islam…", a: ["Wajib","Haram","Dibolehkan dengan syarat adil & mampu","Mubah tanpa syarat"], i: 2, e: "Dibolehkan dengan syarat berat: adil & mampu; banyak ulama menasihatkan kehati‑hatian.", s: "QS. An‑Nisa:3" },
+    { q: "Talak tiga sekaligus (sekali lafaz)…", a: ["Ijma' sah sebagai tiga","Satu talak menurut sebagian ulama kontemporer","Selalu batal","Wajib"], i: 0, e: "Jumhur menganggap tiga; ada pendapat kontemporer menghitung satu—kembali ke otoritas ulama setempat.", s: "Khilaf fiqih" },
+    { q: "Ruju' sah pada talak raj'i…", a: ["Kapan saja","Selama masa 'iddah","Hanya setelah nikah ulang","Tidak ada ruju'"], i: 1, e: "Ruju' pada talak raj'i sah selama 'iddah; setelah habis 'iddah perlu akad baru.", s: "QS. Al‑Baqarah:228" },
+    { q: "Masa 'iddah perempuan yang ditalak (bukan hamil)…", a: ["7 hari","3 quru' (haid/suci sesuai mazhab)","40 hari","4 bulan 10 hari"], i: 1, e: "'Iddah talak: tiga quru' (detail beda mazhab).", s: "QS. Al‑Baqarah:228" },
+    { q: "Masa 'iddah perempuan yang ditinggal wafat suami…", a: ["1 bulan","3 bulan","4 bulan 10 hari","1 tahun"], i: 2, e: "'Iddah wafat: empat bulan sepuluh hari; jika hamil sampai melahirkan.", s: "QS. Al‑Baqarah:234; At‑Thalaq:4" },
+    { q: "Khulu' adalah…", a: ["Talak paksa","Perceraian atas permintaan istri dengan tebusan","Fasakh karena cacat","Ruju'"], i: 1, e: "Khulu' terjadi saat istri meminta berpisah dengan kompensasi (tebus).", s: "QS. Al‑Baqarah:229; hadis Jamila" },
+    { q: "Mut'ah talak (pemberian setelah cerai)…", a: ["Haram","Dianjurkan/ditetapkan bagi yang mampu","Wajib selalu","Untuk wali"], i: 1, e: "Ada anjuran memberi mut'ah bagi yang bercerai sesuai kemampuan.", s: "QS. Al‑Baqarah:241" },
+    { q: "Siapa yang utama mengasuh anak kecil setelah cerai (umum)?", a: ["Ayah","Ibu (selama memenuhi syarat)","Nenek dari ayah","Keluarga suami"], i: 1, e: "Banyak ulama mendahulukan ibu pada usia awal dengan syarat‑syarat tertentu.", s: "Bab hadhanah" },
+    { q: "Apakah istri boleh bekerja di luar rumah?", a: ["Tidak boleh","Boleh dengan izin/kesepakatan & menjaga syariat","Hanya jika terpaksa","Boleh tanpa batas"], i: 1, e: "Boleh dengan adab: izin/kesepakatan, aman, dan menjaga kewajiban rumah tangga.", s: "Kaidah mu'asyarah bil ma'ruf" },
+    { q: "Memberi nafkah mencakup…", a: ["Makanan, pakaian, tempat tinggal sesuai ma'ruf","Hanya uang","Hanya makanan","Hanya tempat tinggal"], i: 0, e: "Nafkah ma'ruf: makan, pakaian, tempat tinggal sesuai kemampuan.", s: "QS. At‑Thalaq:7" },
+    { q: "Hukum tabarruj (berdandan berlebihan) dalam walimah…", a: ["Dianjurkan","Dilarang (jaga aurat & adab)","Wajib","Mubah tanpa batas"], i: 1, e: "Tabarruj dilarang; pernikahan tetap jaga aurat & adab.", s: "QS. An‑Nur:31" },
+    { q: "Bolehkah musik di walimah?", a: ["Selalu haram","Boleh dengan batasan adab, tanpa maksiat (khilaf ulama)","Wajib","Hanya rebana untuk laki‑laki"], i: 1, e: "Ada khilaf; sebagian membolehkan dengan batasan (mis. rebana) tanpa ikhtilat/maksiat.", s: "Khilaf fiqih; HR. Bukhari (rebana)" },
+    { q: "Larangan bercampur bebas (ikhtilat) di walimah…", a: ["Tidak apa‑apa","Tetap jaga hijab & adab pergaulan","Wajib campur","Tidak masalah jika malam"], i: 1, e: "Ikhtilat berlebih dilarang; atur tempat & adab.", s: "Adab pergaulan" },
+    { q: "Bolehkah memuji kecantikan pasangan di publik secara berlebihan?", a: ["Sebaiknya dihindari agar jaga malu","Boleh sebebasnya","Wajib","Haram mutlak"], i: 0, e: "Anjuran menjaga haya' (malu) dan tidak menimbulkan fitnah.", s: "Adab; hadis haya'" },
+    { q: "Apakah suami boleh masuk rumah orang tua istri tanpa izin?", a: ["Boleh selalu","Harus ada izin/adab bertamu","Tergantung tetangga","Wajib menginap"], i: 1, e: "Adab bertamu & menjaga hak keluarga.", s: "Adab muamalah" },
+    { q: "Kapan nafkah iddah wajib diberikan?", a: ["Tidak pernah","Pada talak raj'i selama iddah","Hanya jika istri bekerja","Saat lamaran"], i: 1, e: "Talak raj'i: nafkah iddah masih wajib; pada bain kubra berbeda hukum.", s: "Fiqih talak" },
+    { q: "Apakah istri wajib melayani suami jika sakit berat?", a: ["Tetap wajib seperti biasa","Ada uzur syar'i; komunikasi & empati diutamakan","Tidak ada uzur","Wajib minta maaf"], i: 1, e: "Uzur syar'i menggugurkan kewajiban tertentu; mu'asyarah bil ma'ruf.", s: "Kaidah darurat; maqashid" },
+    { q: "Doa ketika pengantin baru masuk rumah…", a: ["Tidak ada","Ada doa & memohon barakah","Wajib khutbah","Harus sedekah"], i: 1, e: "Memohon barakah & kebaikan untuk keluarga baru.", s: "HR. Abu Dawud (doa barakallahu laka)" },
+    { q: "Apakah boleh menikah tanpa wali (nikah tanpa wali)?", a: ["Sah menurut jumhur","Tidak sah menurut jumhur (kecuali mazhab tertentu)","Wajib sah","Makruh"], i: 1, e: "Jumhur mensyaratkan wali; ada perbedaan pada mazhab Hanafi.", s: "Khilaf fiqih" },
+    { q: "Apakah sah nikah via wakil (tawkil)?", a: ["Tidak sah","Sah jika kuasa jelas & terpenuhi rukun","Haram","Makruh"], i: 1, e: "Wakalah dibolehkan dengan syarat sah.", s: "Bab wakalah" },
+    { q: "Apakah sah nikah daring (online) dengan saksi terdengar jelas?", a: ["Tidak sah selalu","Bisa sah jika terpenuhi syarat kehadiran/pendengaran menurut otoritas setempat","Hanya jika lewat chat","Wajib hadir fisik"], i: 1, e: "Isu kontemporer; rujuk fatwa otoritas lokal.", s: "Fiqih kontemporer" },
+    { q: "Hukum membuka aib pasangan kepada orang lain…", a: ["Boleh untuk hiburan","Haram kecuali ada kebutuhan syar'i (konseling, hukum)","Makruh","Wajib"], i: 1, e: "Menjaga rahasia rumah tangga; kecuali kebutuhan syar'i.", s: "HR. Muslim" },
+    { q: "Siapa mahram karena persusuan (radha'ah)?", a: ["Tidak ada","Ada hubungan mahram jika terpenuhi syarat susuan","Hanya ayah susuan","Hanya ibu susuan"], i: 1, e: "Radha'ah menimbulkan mahram (syarat jumlah/umur susuan khilaf).", s: "QS. An‑Nisa:23; bab radha'ah" },
+    { q: "Apakah istri wajib mengerjakan semua pekerjaan rumah?", a: ["Wajib semua","Tidak mutlak wajib; kewajiban pokok suami memberi nafkah; urai via 'urf/kesepakatan","Haram","Makruh"], i: 1, e: "Urf & kesepakatan berperan; suami wajib nafkah.", s: "Kaidah 'urf; mu'asyarah bil ma'ruf" },
+    { q: "Sunnah sebelum akad nikah…", a: ["Puasa wajib","Khutbah al‑hajah & nasihat","Haji","Umrah"], i: 1, e: "Khutbah & nasihat sebelum akad adalah sunnah.", s: "HR. Abu Dawud" },
+    { q: "Apakah wajib izin istri untuk sedekah dari harta pribadinya?", a: ["Wajib","Tidak wajib, itu haknya","Makruh","Haram"], i: 1, e: "Harta istri miliknya; boleh bersedekah tanpa izin selama tidak menzalimi kewajiban.", s: "QS. An‑Nisa:32" },
+    { q: "Apakah suami boleh membatalkan mahar sepihak setelah akad?", a: ["Boleh","Tidak boleh, mahar hak istri","Wajib","Makruh"], i: 1, e: "Mahar menjadi hak istri sejak akad; perubahan harus dengan ridha istri.", s: "QS. An‑Nisa:4" },
+    { q: "Adab bermalam pertama…", a: ["Dipamerkan di media sosial","Jaga privasi, doa, perlahan & saling ridha","Wajib undang teman","Harus pesta"], i: 1, e: "Adab: doa, kelembutan, privasi, saling ridha.", s: "Adab mu'asyarah" },
+    { q: "Bolehkah meminimalkan biaya walimah?", a: ["Tidak boleh","Boleh; yang penting syiar & syukur tanpa israf","Wajib mahal","Haram"], i: 1, e: "Hindari israf/berlebih‑lebihan.", s: "QS. Al‑A'raf:31" },
+    { q: "Siapa yang paling berhak atas ketaatan seorang istri setelah menikah?", a: ["Orang tuanya","Suaminya dalam perkara ma'ruf","Saudara laki‑lakinya","Atasannya di kantor"], i: 1, e: "Prioritas ketaatan pada suami dalam ma'ruf; hormat pada orang tua tetap dijaga.", s: "QS. An‑Nisa:34" }
+  ];
+
+  // ======================
+  // STATE & HELPERS
+  // ======================
+  let order = [], idx = 0, score = 0, streak = 0, picked = null, answered = false, wrongList = [];
+  let timer = null, perSec = 20, ticking = false;
+
+  const el = id => document.getElementById(id);
+  const shuffle = arr => arr.sort(()=>Math.random()-0.5);
+
+  function start(){
+    const n = +el('count').value;
+    order = shuffle([...Array(QUESTIONS.length).keys()]).slice(0,n);
+    idx = 0; score = 0; streak = 0; wrongList = []; picked=null; answered=false;
+    el('score').textContent = score; el('total').textContent = n; el('idx').textContent = 0; el('cnt').textContent = n;
+    el('btnReview').disabled = true; el('btnSubmit').disabled = false; el('btnNext').disabled = true;
+    renderQ();
+  }
+
+  function renderQ(){
+    answered=false; picked=null; el('explain').style.display='none';
+    const q = QUESTIONS[order[idx]]; el('qtext').textContent = q.q;
+    const opts = el('opts'); opts.innerHTML='';
+    q.a.forEach((t,i)=>{
+      const div = document.createElement('div'); div.className='opt'; div.setAttribute('role','radio'); div.setAttribute('aria-checked','false');
+      div.innerHTML = `<div class="badge">${String.fromCharCode(65+i)}</div><div>${t}</div>`;
+      div.addEventListener('click', ()=> select(i, div));
+      opts.appendChild(div);
+    });
+    el('idx').textContent = idx+1;
+    // timer
+    if(el('timerToggle').checked){ startTimer(); } else { stopTimer(); setBar( (idx/order.length)*100 ); }
+  }
+
+  function select(i, node){ if(answered) return; picked=i; [...el('opts').children].forEach(x=>x.setAttribute('aria-checked','false')); node.setAttribute('aria-checked','true'); }
+
+  function submit(){
+    if(answered) return; const q = QUESTIONS[order[idx]]; if(picked==null){ alert('Pilih salah satu jawaban.'); return; }
+    answered = true; stopTimer();
+    const nodes=[...el('opts').children];
+    nodes.forEach((n,i)=>{
+      if(i===q.i) n.classList.add('correct');
+      if(i===picked && picked!==q.i) n.classList.add('wrong');
+      n.style.cursor='default';
+    });
+    const ok = picked===q.i; if(ok){ score++; streak++; } else { streak=0; wrongList.push(order[idx]); }
+    el('score').textContent = score; el('streak').textContent = streak;
+    el('explain').style.display='block'; el('explain').innerHTML = `<div><b>${ok?'Benar ✅':'Kurang tepat ❌'}</b> — ${q.e} <span class="meta" style="display:block;color:#9fe0ff;margin-top:4px">Sumber: ${q.s}</span></div>`;
+    el('btnNext').disabled = false; el('btnSubmit').disabled = true;
+    addRecent(q.q, ok);
+  }
+
+  function next(){
+    if(!answered) return; idx++;
+    if(idx>=order.length){ finish(); return; }
+    el('btnSubmit').disabled=false; el('btnNext').disabled=true; renderQ();
+  }
+
+  function finish(){
+    const n = order.length; const pct = Math.round((score/n)*100);
+    const msg = pct>=90? 'MasyaAllah! Mantap ilmunya 🤍' : pct>=70? 'Alhamdulillah, bagus! Terus belajar ya.' : pct>=50? 'Lumayan, tinggal diasah lagi~' : 'Semangat! InsyaAllah makin paham.';
+    el('qtext').innerHTML = `Selesai! Skor kamu <b>${score}/${n}</b> (${pct}%).<br>${msg}`;
+    el('opts').innerHTML=''; el('explain').style.display='none'; el('btnNext').disabled=true; el('btnSubmit').disabled=true; el('btnReview').disabled = wrongList.length===0;
+  }
+
+  function addRecent(text, ok){
+    const box = el('recent'); const item = document.createElement('div'); item.className='item';
+    item.innerHTML = `${ok? '✅':'❌'} ${text}`; box.prepend(item); while(box.children.length>8) box.removeChild(box.lastChild);
+  }
+
+  // timer helpers
+  function startTimer(){ perSec = 20; ticking=true; const total=perSec*1000; const start=Date.now(); setBar( (idx/order.length)*100 );
+    timer = setInterval(()=>{
+      const elapsed = Date.now()-start; const p = Math.min(1, elapsed/total);
+      setBar( ((idx/order.length) + p*(1/order.length))*100 );
+      if(p>=1){ clearInterval(timer); ticking=false; autoSubmit(); }
+    },60);
+  }
+  function stopTimer(){ clearInterval(timer); ticking=false; }
+  function setBar(p){ el('bar').style.width = p+'%'; }
+  function autoSubmit(){ if(!answered){ picked = -1; submit(); }}
+
+  // events
+  el('btnStart').addEventListener('click', start);
+  el('btnSubmit').addEventListener('click', submit);
+  el('btnNext').addEventListener('click', next);
+  el('btnReset').addEventListener('click', ()=>{ location.reload(); });
+  el('btnReview').addEventListener('click', ()=>{
+    if(wrongList.length===0) return;
+    order = [...wrongList]; idx=0; score=0; streak=0; wrongList=[]; el('total').textContent = order.length; el('cnt').textContent = order.length; el('score').textContent=0; el('streak').textContent=0; renderQ(); el('btnReview').disabled=true;
+  });
+
+  // keyboard
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ if(!answered) submit(); else next(); }
+    if(['1','2','3','4'].includes(e.key)){
+      const i = +e.key - 1; const node = el('opts').children[i]; if(node) node.click();
+    }
+  });
+</script>
+</body>
+</html>
