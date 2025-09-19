@@ -323,11 +323,24 @@
   }
 
   function getAction(spice, key){
-    const base = ACTIONS[spice]||{};
-    const custom = (CUSTOM[spice]||{});
-    // prefer specific key, else single die mapping if exists
-    return custom[key] || base[key] || (typeof base[+key]==='string'? base[+key]: null) || (typeof custom[+key]==='string'? custom[+key]: null);
+  if (spice === 'all') {
+    // cek custom dulu, lalu default; urutan: saucy → spicy → sweet
+    const order = ['saucy','spicy','sweet'];
+    for (const cat of order) {
+      if (CUSTOM[cat]?.[key]) return CUSTOM[cat][key];
+      if (ACTIONS[cat]?.[key]) return ACTIONS[cat][key];
+      if (typeof ACTIONS[cat]?.[+key] === 'string') return ACTIONS[cat][+key];
+      if (typeof CUSTOM[cat]?.[+key] === 'string') return CUSTOM[cat][+key];
+    }
+    return null;
   }
+  const base = ACTIONS[spice] || {};
+  const custom = CUSTOM[spice] || {};
+  return custom[key] || base[key] ||
+         (typeof base[+key] === 'string' ? base[+key] : null) ||
+         (typeof custom[+key] === 'string' ? custom[+key] : null);
+}
+
 
   function runTimer(sec){
     clearInterval(timer); const bar = el('bar'); bar.style.width='0%';
