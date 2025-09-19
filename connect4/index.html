@@ -133,7 +133,7 @@
   let roomRef=null; // firebase ref
   let unsub=null; // listener
 
-  function newBoard(){ board = Array.from({length:ROWS}, ()=> Array(COLS).fill(0)); winner=0; lock=false; render(); }
+  function newBoard(){ board = Array.from({length:ROWS}, ()=> Array(COLS).fill(0)); winner=0; lock=false; }
 
   function setSize(str){ const [r,c]=str.split('x').map(x=>+x); ROWS=r; COLS=c; newBoard(); buildUI(); }
 
@@ -190,8 +190,8 @@
     return null;
   }
 
-  function resetBoard(){ newBoard(); }
-  function newGame(){ score={1:0,2:0}; turn=1; newBoard(); if(mode==='remote'&&roomRef) saveState(true); }
+  function resetBoard(){ newBoard(); render(); }
+  function newGame(){ score={1:0,2:0}; turn=1; newBoard(); render(); if(mode==='remote'&&roomRef) saveState(true); }
 
   // ======= REMOTE (Firebase) =======
   function canIMove(){ if(!myRole) return false; return (turn===1 && myRole==='p1') || (turn===2 && myRole==='p2'); }
@@ -244,11 +244,10 @@
   el('btnCopyLink').addEventListener('click', copyLink);
 
   // Allow hash-join like #room=KM123
-  window.addEventListener('load', ()=>{
-    initFirebase();
-    buildUI();
-    setSize('6x7');
-    applyMode();
+ window.addEventListener('load', ()=>{
+   initFirebase();
+   setSize('6x7'); 
+   applyMode();
     const m = new URLSearchParams(location.hash.replace('#','')); const r = m.get('room'); if(r){ el('mode').value='remote'; applyMode(); el('roomId').value=r; }
   });
 </script>
