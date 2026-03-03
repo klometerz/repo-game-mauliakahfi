@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spesial Buat Maul 💕</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #fad0c4 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            max-width: 90%;
+            animation: popIn 1s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: #fff;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 77, 109, 0.7);
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .heart-icon {
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            vertical-align: -0.2em;
+            color: #ff1e4d;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            min-width: 160px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .yes {
+            background: linear-gradient(145deg, #ff4d6d, #ff1e4d);
+            color: white;
+            border: 2px solid #fff;
+        }
+
+        .yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #ff4d6d;
+        }
+
+        .no {
+            background: #4a4a4a;
+            color: #fff;
+            position: relative;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .floating-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 0;
+            animation: float 6s infinite ease-in-out;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-heart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(15deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .btn { font-size: 1.2rem; padding: 12px 25px; min-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <div class="container">
+        <h1>Halo Maul Sayang... <br> Kamu Mau Jadi Istri Aku Selamanya? 😳 <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></h1>
+        <div class="buttons">
+            <button id="yes" class="btn yes">
+                <span>Mau Banget!</span>
+                <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button id="no" class="btn no">Enggak Wlee 😝</button>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script>
+        const SVG = {
+            heartPath: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
+        };
+
+        (function() {
+            const noBtn = document.getElementById('no');
+            const yesBtn = document.getElementById('yes');
+            const h1 = document.querySelector('h1');
+            let isNoAbsolute = false;
+
+            // Tombol "Enggak" yang kabur
+            function moveNoButton() {
+                if (!isNoAbsolute) {
+                    const rect = noBtn.getBoundingClientRect();
+                    noBtn.style.position = 'fixed';
+                    noBtn.style.left = rect.left + 'px';
+                    noBtn.style.top = rect.top + 'px';
+                    noBtn.style.width = rect.width + 'px';
+                    noBtn.style.zIndex = '999';
+                    isNoAbsolute = true;
+                }
+
+                const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+                const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+                
+                let newX = Math.random() * maxX;
+                let newY = Math.random() * maxY;
+
+                noBtn.style.transition = 'all 0.2s ease';
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+            }
+
+            noBtn.addEventListener('mouseover', moveNoButton);
+            noBtn.addEventListener('click', () => alert('Eits, gabisa diklik! Harus pilih Mau 😜'));
+
+            // Tombol "Mau"
+            yesBtn.addEventListener('click', function() {
+                // Pesan Alert Spesial
+                alert('YEAYYYY! Makasih ya Maul ❤️ Kamu resmi jadi calon istri paling cantik sedunia! Love you!');
+                
+                startConfetti();
+
+                h1.innerHTML = "I LOVE YOU MAUL! <svg class='heart-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path></svg><br>Siap-siap ya kita ke pelaminan!";
+                h1.style.transform = 'scale(1.1)';
+                
+                yesBtn.innerHTML = '<span>POKOKNYA LOVE YOU!</span> <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+                yesBtn.disabled = true;
+                yesBtn.style.opacity = '0.9';
+                noBtn.style.display = 'none';
+            });
+
+            // Confetti Logic
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [], animationId;
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = -20;
+                    this.size = Math.random() * 8 + 4;
+                    this.speedY = Math.random() * 3 + 3;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.color = `hsl(${Math.random() * 50 + 330}, 100%, 70%)`;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    if (this.y > height) this.y = -20;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size/2, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            }
+
+            function startConfetti() {
+                for (let i = 0; i < 100; i++) particles.push(new Particle());
+                animate();
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // Floating Hearts Background
+            const heartsContainer = document.getElementById('hearts-container');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heartsContainer.appendChild(heart);
+            }
+        })();
+    </script>
+</body>
+</html>
